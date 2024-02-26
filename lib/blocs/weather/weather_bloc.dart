@@ -13,31 +13,14 @@ part 'weather_state.dart';
 class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
   final WeatherRepository weatherRepository;
 
-  //WeatherBloc({required this.weatherRepository}) : super(WeatherInitial());
 
   WeatherBloc(this.weatherRepository) : super(WeatherInitial()) {
     on<FetchWeather>(_mapFetchWeatherToState);
   }
 
-  /*@override
-  Stream<WeatherState> mapEventToState(WeatherEvent event) async* {
-    print("Hiiii...2");
-    if (event is FetchWeather) {
-      yield* _mapFetchWeatherToState(event);
-    }
-  }*/
-
-  /*Stream<WeatherState> _mapFetchWeatherToState(FetchWeather event) async* {
-    try {
-      final weather = await WeatherRepository.getWeather(event.city);
-      yield WeatherLoaded(weather: weather);
-    } catch (_) {
-      yield WeatherError();
-    }
-  }*/
-
   void _mapFetchWeatherToState(FetchWeather event, Emitter<WeatherState> emit) async {
     try {
+      emit(WeatherLoading()); // Emit the loading state before making the API call
       final weather = await WeatherRepository.getWeather(event.city);
       emit(WeatherLoaded(weather: weather));
       } catch (_) {

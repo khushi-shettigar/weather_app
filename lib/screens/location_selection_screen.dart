@@ -6,7 +6,9 @@ import 'package:weather_app/screens/weather_display_screen.dart';
 
 class LocationSelectionScreen  extends StatelessWidget {
   LocationSelectionScreen ({Key? key}) : super(key: key);
+
   final TextEditingController _cityController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -42,27 +44,36 @@ class LocationSelectionScreen  extends StatelessWidget {
               children: [
                 TextField(
                   controller: _cityController,
+                  focusNode: _focusNode,
+                  autofocus: true,
                   decoration: const InputDecoration(
-                    labelText: "Enter City Name",
+                    labelText: 'Enter City Name',
+                    border: OutlineInputBorder(),
                   ),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 20.0),
                 ElevatedButton(
                     onPressed: () async {
-                      //Dispatch FetchWeather event with the selected city
-                      print("Hiiii...");
-                      weatherBloc.add(FetchWeather(city: _cityController.text));
-                      print("Hiiii...1");
+                      // Check if the widget is laid out before trying to unfocus
+                      if (_focusNode.hasFocus) {
+                        // Unfocus the FocusNode to dismiss the keyboard
+                        _focusNode.unfocus();
+                      }
 
-                      try {
+                      //Dispatch FetchWeather event with the selected city
+                      weatherBloc.add(FetchWeather(city: _cityController.text));
+
+                      /*try {
                         await WeatherRepository.getWeather(_cityController.text);
                         // TODO: Parse the weatherData and update the state
                       } catch (e) {
-                        //WeatherBloc.add(WeatherError());
-                      }
+                        //weatherBloc.add(WeatherError());
+                      }*/
                     },
                     child: const Text("Get Weather")
-                )
+                ),
+                if (state is WeatherLoading)
+                  const CircularProgressIndicator(),
               ],
             ),
           );
